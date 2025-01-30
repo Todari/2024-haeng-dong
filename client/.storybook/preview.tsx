@@ -4,6 +4,8 @@ import type {Preview} from '@storybook/react';
 import {HDesignProvider} from '../src/components/Design';
 import {css, Global} from '@emotion/react';
 import {GlobalStyle} from '../src/GlobalStyle';
+import {OverlayProvider} from '../src/components/Design/components/Overlay/OverlayProvider';
+
 const preview: Preview = {
   parameters: {
     controls: {
@@ -46,7 +48,9 @@ const preview: Preview = {
             ]}
           />
           <HDesignProvider>
-            <Story />
+            <OverlayProvider>
+              <Story />
+            </OverlayProvider>
           </HDesignProvider>
         </div>
       );

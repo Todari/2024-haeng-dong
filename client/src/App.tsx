@@ -13,6 +13,7 @@ import NetworkStateCatcher from '@utils/NetworkStateCatcher';
 
 import {GlobalStyle} from './GlobalStyle';
 import UnPredictableErrorBoundary from './UnPredictableErrorBoundary';
+import {OverlayProvider} from '@components/Design/components/Overlay/OverlayProvider';
 
 const App: React.FC = () => {
   return (
@@ -25,7 +26,9 @@ const App: React.FC = () => {
             <NetworkStateCatcher />
             <ToastContainer />
             <AmplitudeInitializer>
-              <Outlet />
+              <OverlayProvider>
+                <Outlet />
+              </OverlayProvider>
             </AmplitudeInitializer>
           </QueryClientBoundary>
         </ErrorCatcher>
