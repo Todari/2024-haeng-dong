@@ -7,6 +7,7 @@ interface InterceptAPIProps {
   type: APIType;
   delay?: number;
   statusCode?: number;
+  errorMessage?: string;
 }
 const POST_EVENT = {
   method: 'POST',
@@ -29,12 +30,12 @@ Cypress.Commands.add('blockKakao', () => {
   }).as('blockKakao');
 });
 
-Cypress.Commands.add('interceptAPI', ({type, delay = 0, statusCode = 200}: InterceptAPIProps) => {
+Cypress.Commands.add('interceptAPI', ({type, delay = 0, statusCode = 200, errorMessage}: InterceptAPIProps) => {
   if (type === 'postEvent')
     cy.intercept(POST_EVENT, {
       delay,
       statusCode,
-      fixture: 'postEvent.json',
+      body: statusCode === 400 ? {message: errorMessage} : {fixture: 'postEvent.json'},
     }).as('postEvent');
   if (type === 'getEventName')
     cy.intercept(GET_EVENT_NAME, {
