@@ -1,6 +1,7 @@
 import type {BillDetails} from 'types/serviceType';
 
 import {WithErrorHandlingStrategy} from '@errors/RequestGetError';
+import {distributePrice} from '@haeng-dong/shared';
 
 import {BASE_URL} from '@apis/baseUrl';
 import {ADMIN_API_PREFIX, MEMBER_API_PREFIX} from '@apis/endpointPrefix';
@@ -14,13 +15,20 @@ export interface RequestPostBill {
 }
 
 export const requestPostBill = async ({eventId, title, price, memberIds}: WithEventId<RequestPostBill>) => {
+  const prices = distributePrice(price, memberIds.length);
+  const billDetails = memberIds.map((memberId, index) => ({
+    memberId,
+    price: prices[index],
+    isFixed: false,
+  }));
+
   await requestPostWithoutResponse({
     baseUrl: BASE_URL.HD,
     endpoint: `${ADMIN_API_PREFIX}/${eventId}/bills`,
     body: {
       title,
       price,
-      memberIds,
+      billDetails,
     },
   });
 };
@@ -58,7 +66,7 @@ export const requestGetBillDetails = async ({
 };
 
 export interface PutBillDetail {
-  id: number;
+  memberId: number;
   price: number;
   isFixed: boolean;
 }

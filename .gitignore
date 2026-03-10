@@ -243,3 +243,12 @@ gradle-app.setting
 *.hprof
 
 # End of https://www.toptal.com/developers/gitignore/api/java,intellij,gradle,macos,windows,linux
+
+### Node.js ###
+node_modules/
+dist/
+.env
+.env.local
+.env.*.local
+.turbo/
+.pnpm-store/

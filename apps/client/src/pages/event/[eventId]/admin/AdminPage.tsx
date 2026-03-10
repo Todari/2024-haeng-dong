@@ -45,9 +45,10 @@ const AdminPage = () => {
     navigate(`/event/${eventId}/admin/members`);
   };
 
-  const navigateAddImages = () => {
-    navigate(`/event/${eventId}/admin/add-images`);
-  };
+  // [DISABLED] 이미지 업로드 기능 비활성화
+  // const navigateAddImages = () => {
+  //   navigate(`/event/${eventId}/admin/add-images`);
+  // };
 
   const navigateAddBill = () => {
     trackAddBillStart({eventName, eventToken: eventId});
@@ -70,7 +71,8 @@ const AdminPage = () => {
             <DropdownButton text="행사 이름 변경" onClick={navigateEditEventName} />
             <DropdownButton text="전체 참여자 관리" onClick={navigateEventMemberManage} />
             <DropdownButton text="계좌번호 입력하기" onClick={navigateAccountInputPage} />
-            <DropdownButton text="사진 첨부하기" onClick={navigateAddImages} />
+            {/* [DISABLED] 이미지 업로드 기능 비활성화 */}
+            {/* <DropdownButton text="사진 첨부하기" onClick={navigateAddImages} /> */}
             {!createdByGuest ? (
               <DropdownButton text="행사 삭제하기" onClick={deleteEventAndNavigateCreatedEventsPage} />
             ) : null}

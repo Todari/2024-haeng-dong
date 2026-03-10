@@ -27,8 +27,9 @@ const AddBillFunnel = lazy(() => import('@pages/event/[eventId]/admin/add-bill/A
 const MembersPage = lazy(() => import('@pages/event/[eventId]/admin/members/MembersPage'));
 const EditBillPage = lazy(() => import('@pages/event/[eventId]/admin/edit-bill/EditBillPage'));
 const EditAccountPage = lazy(() => import('@pages/event/[eventId]/admin/edit-account/EditAccountPage'));
-const ImagesPage = lazy(() => import('@pages/event/[eventId]/images/ImagesPage'));
-const AddImagesPage = lazy(() => import('@pages/event/[eventId]/admin/add-images/AddImagesPage'));
+// [DISABLED] 이미지 업로드 기능 비활성화
+// const ImagesPage = lazy(() => import('@pages/event/[eventId]/images/ImagesPage'));
+// const AddImagesPage = lazy(() => import('@pages/event/[eventId]/admin/add-images/AddImagesPage'));
 const QRCodePage = lazy(() => import('@pages/event/[eventId]/qrcode/QRCodePage'));
 const LoginPage = lazy(() => import('@pages/login/LoginPage'));
 const SettingPage = lazy(() => import('@pages/setting/SettingPage'));
@@ -171,14 +172,15 @@ const router = createBrowserRouter([
         path: ROUTER_URLS.editEventName,
         element: <EditEventName />,
       },
-      {
-        path: ROUTER_URLS.images,
-        element: <ImagesPage />,
-      },
-      {
-        path: ROUTER_URLS.addImages,
-        element: <AddImagesPage />,
-      },
+      // [DISABLED] 이미지 업로드 기능 비활성화
+      // {
+      //   path: ROUTER_URLS.images,
+      //   element: <ImagesPage />,
+      // },
+      // {
+      //   path: ROUTER_URLS.addImages,
+      //   element: <AddImagesPage />,
+      // },
       {
         path: ROUTER_URLS.send,
         element: <SendPage />,

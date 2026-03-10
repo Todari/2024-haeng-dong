@@ -1,0 +1,95 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            Int      @id @default(autoincrement())
+  nickname      String
+  password      String?
+  bankName      String?  @map("bank_name")
+  accountNumber String?  @map("account_number")
+  memberNumber  String?  @unique @map("member_number")
+  picture       String?
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  events Event[]
+
+  @@map("users")
+}
+
+model Event {
+  id            Int       @id @default(autoincrement())
+  name          String
+  token         String    @unique
+  userId        Int       @map("user_id")
+  bankName      String?   @map("bank_name")
+  accountNumber String?   @map("account_number")
+  createdByGuest Boolean  @default(true) @map("created_by_guest")
+  deletedAt     DateTime? @map("deleted_at")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  user    User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  members EventMember[]
+  bills   Bill[]
+  images  EventImage[]
+
+  @@map("events")
+}
+
+model EventMember {
+  id          Int      @id @default(autoincrement())
+  eventId     Int      @map("event_id")
+  name        String
+  isDeposited Boolean  @default(false) @map("is_deposited")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  event       Event        @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  billDetails BillDetail[]
+
+  @@map("event_members")
+}
+
+model Bill {
+  id        Int      @id @default(autoincrement())
+  eventId   Int      @map("event_id")
+  title     String
+  price     BigInt
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  event       Event        @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  billDetails BillDetail[]
+
+  @@map("bills")
+}
+
+model BillDetail {
+  id       Int     @id @default(autoincrement())
+  billId   Int     @map("bill_id")
+  memberId Int     @map("member_id")
+  price    BigInt
+  isFixed  Boolean @default(false) @map("is_fixed")
+
+  bill   Bill        @relation(fields: [billId], references: [id], onDelete: Cascade)
+  member EventMember @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  @@map("bill_details")
+}
+
+model EventImage {
+  id        Int      @id @default(autoincrement())
+  eventId   Int      @map("event_id")
+  name      String
+  createdAt DateTime @default(now()) @map("created_at")
+
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@map("event_images")
+}

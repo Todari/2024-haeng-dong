@@ -29,6 +29,7 @@ export default {
       '@theme': path.resolve(__dirname, 'src/components/Design/theme/'),
       '@layouts': path.resolve(__dirname, 'src/components/Design/layouts/'),
       '@type': path.resolve(__dirname, 'src/components/Design/type/'),
+      '@haeng-dong/shared': path.resolve(__dirname, '../../packages/shared/src'),
     },
   },
   module: {
@@ -36,7 +37,7 @@ export default {
       {
         test: /\.tsx?$/,
         loader: 'ts-loader',
-        exclude: /node_modules/,
+        exclude: /node_modules\/(?!@haeng-dong)/,
       },
       {
         test: /\.svg$/,

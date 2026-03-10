@@ -1,0 +1,21 @@
+{
+  "name": "haeng-dong",
+  "private": true,
+  "scripts": {
+    "dev:client": "pnpm --filter @haeng-dong/client dev",
+    "dev:server": "pnpm --filter @haeng-dong/server start:dev",
+    "build": "turbo run build",
+    "build:client": "turbo run build --filter=@haeng-dong/client",
+    "build:server": "turbo run build --filter=@haeng-dong/server",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "clean": "turbo run clean"
+  },
+  "devDependencies": {
+    "turbo": "^2.3.0"
+  },
+  "packageManager": "pnpm@9.15.0",
+  "engines": {
+    "node": ">=20.15.1"
+  }
+}

@@ -4,34 +4,36 @@ on:
   push:
     branches: ["main"]
     paths:
-      - "client/**"
+      - "apps/client/**"
+      - "packages/shared/**"
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
-    defaults:
-      run:
-        shell: bash
-        working-directory: ./client
-
     steps:
-      # 1. Git 리포지토리 체크아웃
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # 2. Node.js 20.15.1 version으로 셋팅
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "20.15.1"
+          cache: "pnpm"
 
-      # 3. 의존성 설치
       - name: Install Dependencies
-        run: npm install
+        run: pnpm install --frozen-lockfile
 
-      # 4. 환경변수 파일 github secret에서 가져와서 생성
+      - name: Build shared package
+        run: pnpm --filter @haeng-dong/shared build
+
       - name: Create environments from github secrets
+        working-directory: ./apps/client
         run: |
           echo "API_BASE_URL=${{ secrets.API_BASE_URL }}" >> .env.prod
           echo "AMPLITUDE_KEY=${{ secrets.AMPLITUDE_KEY }}" >> .env.prod
@@ -40,11 +42,9 @@ jobs:
           echo "KAKAO_REDIRECT_URI=${{ secrets.KAKAO_REDIRECT_URI }}" >> .env.prod
           echo "SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}" >> .env.prod
 
-      # 5. Prod 환경으로 빌드
       - name: Build for Prod environment
-        run: npm run build
+        run: pnpm --filter @haeng-dong/client build
 
-      # 6. AWS 인증 설정
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v3
         with:
@@ -52,11 +52,9 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      # 7. S3에 빌드 결과 업로드
       - name: Upload build results to S3
-        run: aws s3 sync ./dist s3://${{ secrets.S3_BUCKET_NAME }}/prod/ --delete
+        run: aws s3 sync ./apps/client/dist s3://${{ secrets.S3_BUCKET_NAME }}/prod/ --delete
 
-      # 8. CloudFront 캐시 무효화
       - name: Invalidate CloudFront Cache
         run: |
           aws cloudfront create-invalidation \

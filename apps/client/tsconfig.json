@@ -52,7 +52,8 @@
       "@layouts/*": ["components/Design/layouts/*"],
       "@type/*": ["components/Design/type/*"],
       "@theme/*": ["components/Design/theme/*"],
-      "@HDutils/*": ["components/Design/utils/*"]
+      "@HDutils/*": ["components/Design/utils/*"],
+      "@haeng-dong/shared": ["../../../packages/shared/src/index.ts"]
     },
     "outDir": "./dist"
   },

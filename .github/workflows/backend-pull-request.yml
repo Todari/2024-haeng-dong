@@ -2,43 +2,41 @@ name: backend-pull-request
 
 on:
   pull_request:
-    branches: [ "main", "be-dev" ]
+    branches: ["main", "be-dev"]
+    paths:
+      - "apps/server/**"
+      - "packages/shared/**"
 
 jobs:
   build:
-    runs-on: [ ubuntu-latest ]
-
-    defaults:
-      run:
-        working-directory: ./server
+    runs-on: ubuntu-latest
 
     steps:
-      - name: CheckOut
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
         with:
-          java-version: '17'
-          distribution: 'temurin'
+          version: 9
 
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@417ae3ccd767c252f5661f1ace9f835f9654f2b5 # v3.1.0
-
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
-
-      - name: Test with Gradle Wrapper
-        run: ./gradlew clean build
-
-      - name: publish unit test results
-        uses: EnricoMi/publish-unit-test-result-action@v2
-        if: always()
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
-          files: server/build/test-results/test/TEST-*.xml
+          node-version: "20.15.1"
+          cache: "pnpm"
 
-      - name: add comments to a pull request
-        uses: mikepenz/action-junit-report@v3
-        if: always()
-        with:
-          report_paths: server/build/test-results/test/TEST-*.xml
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build shared package
+        run: pnpm --filter @haeng-dong/shared build
+
+      - name: Generate Prisma client
+        run: pnpm --filter @haeng-dong/server prisma:generate
+
+      - name: Build server
+        run: pnpm --filter @haeng-dong/server build
+
+      - name: Run tests
+        run: pnpm --filter @haeng-dong/server test

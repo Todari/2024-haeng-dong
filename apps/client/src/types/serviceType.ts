@@ -22,6 +22,7 @@ export interface Bill {
 
 export interface BillDetail {
   id: number;
+  memberId: number;
   memberName: string;
   price: number;
   isFixed: boolean;

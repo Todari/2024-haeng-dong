@@ -1,9 +1,10 @@
-import {useMatch, useNavigate} from 'react-router-dom';
+import {useMatch} from 'react-router-dom';
 
 import StepList from '@components/StepList/Steps';
 import Reports from '@components/Reports/Reports';
-import useRequestGetImages from '@hooks/queries/images/useRequestGetImages';
-import {IconPictureSquare} from '@components/Design/components/Icons/Icons/IconPictureSquare';
+// [DISABLED] 이미지 업로드 기능 비활성화
+// import useRequestGetImages from '@hooks/queries/images/useRequestGetImages';
+// import {IconPictureSquare} from '@components/Design/components/Icons/Icons/IconPictureSquare';
 
 import useEventDataContext from '@hooks/useEventDataContext';
 import useAmplitude from '@hooks/useAmplitude';
@@ -12,7 +13,8 @@ import {useTotalExpenseAmountStore} from '@store/totalExpenseAmountStore';
 
 import {Tab, Tabs, Title} from '@HDesign/index';
 
-import getEventIdByUrl from '@utils/getEventIdByUrl';
+// [DISABLED] 이미지 업로드 기능 비활성화
+// import getEventIdByUrl from '@utils/getEventIdByUrl';
 
 import {ROUTER_URLS} from '@constants/routerUrls';
 
@@ -24,22 +26,24 @@ const HomePage = () => {
   const isInHomePage = useMatch(ROUTER_URLS.home) !== null;
 
   const {totalExpenseAmount} = useTotalExpenseAmountStore();
-  const {images} = useRequestGetImages();
-  const navigate = useNavigate();
-  const eventId = getEventIdByUrl();
+  // [DISABLED] 이미지 업로드 기능 비활성화
+  // const {images} = useRequestGetImages();
+  // const navigate = useNavigate();
+  // const eventId = getEventIdByUrl();
 
   return (
     <div css={receiptStyle}>
       <Title
         title={eventName}
         amount={totalExpenseAmount}
-        icon={
-          images.length !== 0 && (
-            <button>
-              <IconPictureSquare onClick={() => navigate(`/event/${eventId}/images`)} />
-            </button>
-          )
-        }
+        // [DISABLED] 이미지 업로드 기능 비활성화
+        // icon={
+        //   images.length !== 0 && (
+        //     <button>
+        //       <IconPictureSquare onClick={() => navigate(`/event/${eventId}/images`)} />
+        //     </button>
+        //   )
+        // }
       />
       <Tabs>
         <Tab label="참여자 별 정산" content={<Reports />} />

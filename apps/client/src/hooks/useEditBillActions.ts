@@ -44,8 +44,8 @@ const useEditBillActions = ({bill, billDetails, newBill, newBillDetails}: Props)
     if (isBillDetailsChanged) {
       putBillDetails({
         billId: bill.id,
-        billDetails: newBillDetails.map(({id, price, isFixed}) => ({
-          id,
+        billDetails: newBillDetails.map(({memberId, price, isFixed}) => ({
+          memberId,
           price,
           isFixed,
         })),

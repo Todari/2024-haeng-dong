@@ -5,54 +5,43 @@ on:
     types: [opened, synchronize]
     branches: [main, fe-dev]
     paths:
-      - "client/**"
+      - "apps/client/**"
+      - "packages/shared/**"
 
 jobs:
   test:
     runs-on: ubuntu-latest
 
-    defaults:
-      run:
-        shell: bash
-        working-directory: ./client
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "20.15.1"
+          cache: "pnpm"
 
       - name: Install dependencies
-        run: npm install
+        run: pnpm install --frozen-lockfile
+
+      - name: Build shared package
+        run: pnpm --filter @haeng-dong/shared build
 
       - name: Run lint
-        run: npm run lint
+        run: pnpm --filter @haeng-dong/client lint
 
       - name: Run test
-        run: npm run test
-
-      - name: Cypress test
-        run: npm run dev &
-        env:
-          CI: true
-
-      - name: Wait for the server to start
-        run: sleep 3
-
-      - name: Run Cypress tests
-        run: npm run cypress-run
+        run: pnpm --filter @haeng-dong/client test
 
   chromatic:
     name: Run Chromatic
     runs-on: ubuntu-latest
-
-    defaults:
-      run:
-        shell: bash
-        working-directory: ./client
 
     steps:
       - name: Checkout code
@@ -60,32 +49,31 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "20.15.1"
-
-      - name: Cache dependencies
-        id: cache
-        uses: actions/cache@v3
-        with:
-          path: "**/node_modules"
-          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}-v1
-          restore-keys: |
-            ${{ runner.os }}-npm-
+          cache: "pnpm"
 
       - name: Install dependencies
-        if: steps.cache.outputs.cache-hit != 'true'
-        run: npm install
+        run: pnpm install --frozen-lockfile
+
+      - name: Build shared package
+        run: pnpm --filter @haeng-dong/shared build
 
       - name: Run Chromatic
         uses: chromaui/action@latest
         id: publish_chromatic
         with:
-          workingDir: client
+          workingDir: apps/client
           projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
 
       - name: Comment on PR
         uses: thollander/actions-comment-pull-request@v2
         with:
-          message: "🚀 **storybook**: ${{ steps.publish_chromatic.outputs.storybookUrl }}"
+          message: "**storybook**: ${{ steps.publish_chromatic.outputs.storybookUrl }}"

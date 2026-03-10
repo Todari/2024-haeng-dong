@@ -1,5 +1,5 @@
 {
-  "name": "haengdong-client",
+  "name": "@haeng-dong/client",
   "version": "1.0.0",
   "description": "",
   "type": "module",
@@ -93,6 +93,7 @@
     "webpack-merge": "^6.0.1"
   },
   "dependencies": {
+    "@haeng-dong/shared": "workspace:*",
     "@amplitude/analytics-browser": "^2.11.7",
     "@emotion/react": "^11.11.4",
     "@sentry/react": "^8.25.0",
