@@ -19,7 +19,7 @@ services:
       - haengdong_network
 
   server:
-    image: yourusername/haeng-dong-server:latest
+    image: todari/haengdong:latest
     restart: unless-stopped
     ports:
       - "8080:8080"
