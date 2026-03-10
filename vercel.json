@@ -1,9 +1,0 @@
-{
-  "installCommand": "corepack enable && pnpm install --frozen-lockfile",
-  "buildCommand": "pnpm --filter @haeng-dong/shared build && pnpm --filter @haeng-dong/client build",
-  "outputDirectory": "apps/client/dist",
-  "framework": null,
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
-  ]
-}
