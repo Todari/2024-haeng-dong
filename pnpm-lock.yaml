@@ -54,6 +54,9 @@ importers:
         specifier: ^4.5.5
         version: 4.5.7(@types/react@18.3.28)(react@18.3.1)
     devDependencies:
+      '@amplitude/analytics-types':
+        specifier: ^2.11.1
+        version: 2.11.1
       '@chromatic-com/storybook':
         specifier: ^1.6.1
         version: 1.9.0(react@18.3.1)
@@ -378,6 +381,9 @@ packages:
 
   '@amplitude/analytics-core@2.41.3':
     resolution: {integrity: sha512-UujceP+22zVi/0hl4ccrKEQ94rsCTOVtNZIeM2UxELYLZj24fqjUgdTX+x+gUuzgzOSDRiohkRLwRt6hiBmgmw==}
+
+  '@amplitude/analytics-types@2.11.1':
+    resolution: {integrity: sha512-wFEgb0t99ly2uJKm5oZ28Lti0Kh5RecR5XBkwfUpDzn84IoCIZ8GJTsMw/nThu8FZFc7xFDA4UAt76zhZKrs9A==}
 
   '@amplitude/plugin-autocapture-browser@1.23.3':
     resolution: {integrity: sha512-h+dMoXqmKSSlkk4sdPGwIl0I+/6trG8tJvYifpIKWexooxe5z9GcC33pFdYebvF6odupU7lk152fEOlkq/OmIw==}
@@ -7922,6 +7928,8 @@ snapshots:
       safe-json-stringify: 1.2.0
       tslib: 2.8.1
       zen-observable: 0.10.0
+
+  '@amplitude/analytics-types@2.11.1': {}
 
   '@amplitude/plugin-autocapture-browser@1.23.3':
     dependencies:

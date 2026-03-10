@@ -21,6 +21,8 @@ export default merge(common, {
   plugins: [
     new Dotenv({
       path: '.env.prod',
+      systemvars: true,
+      silent: true,
     }),
     sentryWebpackPlugin({
       authToken: process.env.SENTRY_AUTH_TOKEN,

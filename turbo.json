@@ -1,5 +1,14 @@
 {
   "$schema": "https://turbo.build/schema.json",
+  "globalEnv": [
+    "API_BASE_URL",
+    "AMPLITUDE_KEY",
+    "KAKAO_JAVASCRIPT_KEY",
+    "IMAGE_URL",
+    "KAKAO_REDIRECT_URI",
+    "SENTRY_AUTH_TOKEN",
+    "NODE_ENV"
+  ],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
