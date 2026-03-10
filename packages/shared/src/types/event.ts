@@ -1,4 +1,4 @@
-import type { BankAccount } from './bank.js';
+import type { BankAccount } from './bank';
 
 export type EventId = string;
 export type EventName = string;

@@ -1,5 +1,5 @@
-import type { BankAccount, BankName } from './bank.js';
-import type { Nickname } from './event.js';
+import type { BankAccount, BankName } from './bank';
+import type { Nickname } from './event';
 
 export type User = BankAccount & {
   nickname: Nickname;

@@ -1,1 +1,1 @@
-export * from './settlement.js';
+export * from './settlement';

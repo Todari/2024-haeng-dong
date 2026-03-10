@@ -1,4 +1,4 @@
-import type { Member } from './member.js';
+import type { Member } from './member';
 
 export interface Bill {
   id: number;
