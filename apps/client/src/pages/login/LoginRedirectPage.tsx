@@ -1,4 +1,4 @@
-import {useEffect} from 'react';
+import {useEffect, useRef} from 'react';
 import {useNavigate} from 'react-router-dom';
 
 import Image from '@components/Design/components/Image/Image';
@@ -22,15 +22,24 @@ const LoginRedirectPage = () => {
   const {updateAuth} = useAuthStore();
   const {trackStartCreateEvent} = useAmplitude();
 
+  const hasStartedRef = useRef(false);
+
   useEffect(() => {
     if (location.search === '') return;
 
     const code = new URLSearchParams(location.search).get('code');
+    if (!code) return;
+
+    // 인가 코드는 1회용 - React StrictMode/재렌더 시 중복 요청 방지
+    if (hasStartedRef.current) return;
+    const processedKey = `kakao_code_${code}`;
+    if (SessionStorage.get<string>(processedKey)) return;
+    hasStartedRef.current = true;
+    SessionStorage.set<string>(processedKey, '1');
+
     const previousUrlForLogin = SessionStorage.get<string>(SESSION_STORAGE_KEYS.previousUrlForLogin);
 
     const kakaoLogin = async () => {
-      if (!code) return;
-
       await requestGetKakaoLogin({throwOnError: true});
       SessionStorage.remove(SESSION_STORAGE_KEYS.previousUrlForLogin);
 

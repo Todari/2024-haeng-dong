@@ -11,6 +11,7 @@ const useRequestGetKakaoLogin = () => {
     queryKey: [QUERY_KEYS.kakaoLogin, code],
     queryFn: () => requestGetKakaoLogin(code ?? ''),
     enabled: false,
+    retry: false, // 인가 코드는 1회용이므로 재시도하면 KOE320 발생
   });
 
   return {
