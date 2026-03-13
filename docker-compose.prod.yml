@@ -19,6 +19,9 @@ services:
       - haengdong_network
 
   server:
+    build:
+      context: .
+      dockerfile: apps/server/Dockerfile
     image: todari/haengdong:latest
     restart: unless-stopped
     ports:
