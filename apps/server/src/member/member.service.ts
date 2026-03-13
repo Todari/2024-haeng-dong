@@ -19,9 +19,9 @@ export class MemberService {
     this.verifyOwner(event, userId);
 
     const members = await this.prisma.eventMember.createManyAndReturn({
-      data: dto.names.map((name) => ({
+      data: dto.members.map((m) => ({
         eventId: event.id,
-        name,
+        name: m.name,
       })),
     });
 

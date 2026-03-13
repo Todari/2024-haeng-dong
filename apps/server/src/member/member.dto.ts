@@ -10,10 +10,18 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
+export class CreateMemberItem {
+  @IsString()
+  @MinLength(1)
+  @MaxLength(20)
+  name!: string;
+}
+
 export class CreateMemberDto {
   @IsArray()
-  @IsString({ each: true })
-  names!: string[];
+  @ValidateNested({ each: true })
+  @Type(() => CreateMemberItem)
+  members!: CreateMemberItem[];
 }
 
 export class MemberUpdateItem {
