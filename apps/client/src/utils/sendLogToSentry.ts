@@ -1,6 +1,6 @@
-import * as Sentry from '@sentry/react';
+// import * as Sentry from '@sentry/react';
 
-import RequestError from '../errors/RequestError';
+// import RequestError from '../errors/RequestError';
 
 /**
  * level은 아래와 같은 용도에 맞게 지정해줍니다.
@@ -13,40 +13,39 @@ import RequestError from '../errors/RequestError';
  * log: 일반적인 로그 메세지
  */
 
-type SentryLevel = 'fatal' | 'error' | 'warning' | 'info' | 'debug' | 'log';
+// type SentryLevel = 'fatal' | 'error' | 'warning' | 'info' | 'debug' | 'log';
 type SendLogToSentry = {
-  level?: SentryLevel;
+  level?: string;
   error: Error;
 };
 
-const sendLogToSentry = ({level = 'error', error}: SendLogToSentry) => {
-  Sentry.withScope(scope => {
-    scope.setLevel(level);
-    scope.setTag('environment', process.env.NODE_ENV);
-    if (error instanceof RequestError) {
-      const {errorCode, message} = error;
-      scope.setTags({
-        endpoint: error.endpoint,
-        url: window.location.href,
-        errorMessage: message,
-        status: error.status,
-        errorCode,
-        requestBody: JSON.stringify(error.requestBody),
-        method: error.method,
-      });
-      Sentry.captureMessage(`${errorCode}`);
-    } else {
-      const {name, message} = error;
-
-      scope.setTags({
-        url: window.location.href,
-        name,
-        message,
-      });
-
-      Sentry.captureMessage(`${name}`);
-    }
-  });
+// Sentry 비활성화 (필요 시 주석 해제)
+const sendLogToSentry = (_params: SendLogToSentry) => {
+  // Sentry.withScope(scope => {
+  //   scope.setLevel(level);
+  //   scope.setTag('environment', process.env.NODE_ENV);
+  //   if (error instanceof RequestError) {
+  //     const {errorCode, message} = error;
+  //     scope.setTags({
+  //       endpoint: error.endpoint,
+  //       url: window.location.href,
+  //       errorMessage: message,
+  //       status: error.status,
+  //       errorCode,
+  //       requestBody: JSON.stringify(error.requestBody),
+  //       method: error.method,
+  //     });
+  //     Sentry.captureMessage(`${errorCode}`);
+  //   } else {
+  //     const {name, message} = error;
+  //     scope.setTags({
+  //       url: window.location.href,
+  //       name,
+  //       message,
+  //     });
+  //     Sentry.captureMessage(`${name}`);
+  //   }
+  // });
 };
 
 export default sendLogToSentry;

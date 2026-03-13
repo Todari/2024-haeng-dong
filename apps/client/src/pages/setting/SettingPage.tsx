@@ -1,4 +1,4 @@
-import {ErrorBoundary} from '@sentry/react';
+import {ErrorBoundary} from 'react-error-boundary';
 import {Suspense} from 'react';
 import {useNavigate} from 'react-router-dom';
 

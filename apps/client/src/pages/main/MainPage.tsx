@@ -1,5 +1,5 @@
 import {useNavigate} from 'react-router-dom';
-import {ErrorBoundary} from '@sentry/react';
+import {ErrorBoundary} from 'react-error-boundary';
 import {Suspense} from 'react';
 
 import {Profile} from '@components/Design/components/Profile/Profile';
