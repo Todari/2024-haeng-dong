@@ -20,6 +20,7 @@ services:
 
   server:
     image: todari/haengdong:latest
+    platform: linux/arm64
     restart: unless-stopped
     ports:
       - "8080:8080"
