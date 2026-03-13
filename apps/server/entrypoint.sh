@@ -1,6 +1,8 @@
 #!/bin/sh
 set -e
 
+cd /app/apps/server
+
 echo "Running Prisma migrations..."
 prisma migrate deploy --schema ./prisma/schema.prisma
 
