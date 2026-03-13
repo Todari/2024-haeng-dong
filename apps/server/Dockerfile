@@ -1,5 +1,5 @@
-# Build for linux/amd64 when deploying to x86 servers (e.g. AWS EC2) from Apple Silicon Mac
-FROM --platform=linux/amd64 node:20-alpine AS base
+# Use host platform for native build (remove --platform for EC2 compatibility)
+FROM node:20-alpine AS base
 RUN corepack enable && corepack prepare pnpm@9.15.0 --activate
 
 FROM base AS deps
@@ -17,7 +17,7 @@ COPY --from=deps /app/packages/shared/node_modules ./packages/shared/node_module
 COPY packages/shared ./packages/shared
 COPY apps/server ./apps/server
 RUN cd packages/shared && pnpm build
-RUN cd apps/server && npx prisma generate && pnpm build
+RUN cd apps/server && npx prisma generate && npx tsc -p tsconfig.build.json
 RUN find /app/apps/server/dist -type f -name "*.js" | head -20
 
 FROM base AS runner
