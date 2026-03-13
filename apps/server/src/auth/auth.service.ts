@@ -2,6 +2,7 @@ import {
   Injectable,
   UnauthorizedException,
   NotFoundException,
+  Logger,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
@@ -79,14 +80,19 @@ export class AuthService {
     };
   }
 
+  private readonly logger = new Logger(AuthService.name);
+
   private async getKakaoUserInfo(
     code: string,
     redirectUri: string,
   ): Promise<{ id: string; nickname: string; picture: string | null }> {
     const clientId = this.configService.get<string>('KAKAO_CLIENT_ID');
     if (!clientId) {
+      this.logger.error('KAKAO_CLIENT_ID가 설정되지 않았습니다.');
       throw new UnauthorizedException('KAKAO_CLIENT_ID가 설정되지 않았습니다.');
     }
+
+    this.logger.log(`카카오 토큰 요청 - redirect_uri: ${redirectUri}`);
 
     const tokenResponse = await fetch(
       'https://kauth.kakao.com/oauth/token',
@@ -102,22 +108,32 @@ export class AuthService {
       },
     );
 
+    const responseText = await tokenResponse.text();
+
     if (!tokenResponse.ok) {
-      const error = await tokenResponse.text();
+      this.logger.error(
+        `카카오 토큰 API 실패 (${tokenResponse.status}): ${responseText}`,
+      );
       throw new UnauthorizedException(
-        `카카오 인증에 실패했습니다: ${error}`,
+        `카카오 인증에 실패했습니다: ${responseText}`,
       );
     }
 
-    const tokenData = (await tokenResponse.json()) as {
-      id_token?: string;
-      access_token?: string;
-    };
+    let tokenData: { id_token?: string; access_token?: string };
+    try {
+      tokenData = JSON.parse(responseText);
+    } catch {
+      this.logger.error(`카카오 응답 파싱 실패: ${responseText}`);
+      throw new UnauthorizedException('카카오 인증 응답을 처리할 수 없습니다.');
+    }
 
     const idToken = tokenData.id_token;
     if (!idToken) {
+      this.logger.error(
+        `카카오 id_token 없음. 응답: ${JSON.stringify(tokenData)}`,
+      );
       throw new UnauthorizedException(
-        '카카오 ID 토큰을 받지 못했습니다. OpenID Connect가 활성화되어 있는지 확인하세요.',
+        '카카오 ID 토큰을 받지 못했습니다. 카카오 개발자 콘솔에서 OpenID Connect를 활성화하세요.',
       );
     }
 
