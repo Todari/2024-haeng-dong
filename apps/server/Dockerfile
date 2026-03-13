@@ -21,6 +21,8 @@ RUN cd apps/server && npx prisma generate && pnpm build
 FROM base AS runner
 WORKDIR /app
 ENV NODE_ENV=production
+# Prisma CLI for migrate deploy (pnpm symlinks break when copying to runner)
+RUN npm install -g prisma
 COPY --from=builder /app/apps/server/dist ./dist
 COPY --from=builder /app/apps/server/prisma ./prisma
 COPY --from=builder /app/apps/server/node_modules ./node_modules
