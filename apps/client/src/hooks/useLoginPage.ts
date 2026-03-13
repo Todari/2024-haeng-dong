@@ -23,7 +23,8 @@ const useLoginPage = () => {
       SessionStorage.set<string>(SESSION_STORAGE_KEYS.previousUrlForLogin, previousUrl);
     }
 
-    const link = `https://kauth.kakao.com/oauth/authorize?client_id=${clientId}&redirect_uri=${getKakaoRedirectUrl()}&response_type=code`;
+    const redirectUri = encodeURIComponent(getKakaoRedirectUrl());
+    const link = `https://kauth.kakao.com/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=openid`;
     window.location.href = link;
   };
 

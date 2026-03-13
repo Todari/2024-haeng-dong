@@ -4,6 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from '../prisma/prisma.service';
 
@@ -12,6 +13,7 @@ export class AuthService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly jwtService: JwtService,
+    private readonly configService: ConfigService,
   ) {}
 
   async authenticateAdmin(eventToken: string, userId: number) {
@@ -55,10 +57,8 @@ export class AuthService {
     };
   }
 
-  async loginWithKakao(code: string) {
-    // Kakao OAuth flow placeholder - implement with actual Kakao API
-    // For now, return a structure that matches expected behavior
-    const kakaoUser = await this.getKakaoUserInfo(code);
+  async loginWithKakao(code: string, redirectUri: string) {
+    const kakaoUser = await this.getKakaoUserInfo(code, redirectUri);
 
     let user = await this.prisma.user.findUnique({
       where: { memberNumber: kakaoUser.id },
@@ -75,15 +75,72 @@ export class AuthService {
     }
 
     return {
-      token: this.jwtService.sign({ sub: user.id }),
+      token: this.jwtService.sign({ sub: user.id, role: 'MEMBER' }),
     };
   }
 
   private async getKakaoUserInfo(
-    _code: string,
+    code: string,
+    redirectUri: string,
   ): Promise<{ id: string; nickname: string; picture: string | null }> {
-    // TODO: Implement actual Kakao OAuth token exchange and user info retrieval
-    throw new Error('Kakao OAuth not yet implemented');
+    const clientId = this.configService.get<string>('KAKAO_CLIENT_ID');
+    if (!clientId) {
+      throw new UnauthorizedException('KAKAO_CLIENT_ID가 설정되지 않았습니다.');
+    }
+
+    const tokenResponse = await fetch(
+      'https://kauth.kakao.com/oauth/token',
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+          grant_type: 'authorization_code',
+          client_id: clientId,
+          redirect_uri: redirectUri,
+          code,
+        }),
+      },
+    );
+
+    if (!tokenResponse.ok) {
+      const error = await tokenResponse.text();
+      throw new UnauthorizedException(
+        `카카오 인증에 실패했습니다: ${error}`,
+      );
+    }
+
+    const tokenData = (await tokenResponse.json()) as {
+      id_token?: string;
+      access_token?: string;
+    };
+
+    const idToken = tokenData.id_token;
+    if (!idToken) {
+      throw new UnauthorizedException(
+        '카카오 ID 토큰을 받지 못했습니다. OpenID Connect가 활성화되어 있는지 확인하세요.',
+      );
+    }
+
+    const payload = this.decodeJwtPayload(idToken);
+    const id = String(payload.sub ?? '');
+    if (!id) {
+      throw new UnauthorizedException('카카오 사용자 정보를 가져올 수 없습니다.');
+    }
+    const nickname = typeof payload.nickname === 'string' ? payload.nickname : '사용자';
+    const picture =
+      typeof payload.picture === 'string' ? payload.picture : null;
+
+    return { id, nickname, picture };
+  }
+
+  private decodeJwtPayload(token: string): Record<string, unknown> {
+    const parts = token.split('.');
+    if (parts.length !== 3) {
+      throw new UnauthorizedException('잘못된 ID 토큰 형식입니다.');
+    }
+    const base64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+    const json = Buffer.from(base64, 'base64').toString('utf8');
+    return JSON.parse(json) as Record<string, unknown>;
   }
 
   verifyToken(token: string): { sub: number; eventToken?: string } {
