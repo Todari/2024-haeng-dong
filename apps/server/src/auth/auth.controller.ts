@@ -6,10 +6,13 @@ import {
   Get,
   Query,
   Res,
+  UseGuards,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { AuthService } from './auth.service';
 import { ConfigService } from '@nestjs/config';
+import { JwtAuthGuard } from './jwt-auth.guard';
+import { CurrentUser } from '../common/decorators';
 
 const ACCESS_TOKEN_COOKIE = 'accessToken';
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 7; // 7일
@@ -21,10 +24,11 @@ export class AuthController {
     private readonly configService: ConfigService,
   ) {}
 
+  @UseGuards(JwtAuthGuard)
   @Post('admin/events/:eventToken/auth')
   authenticateAdmin(
     @Param('eventToken') eventToken: string,
-    @Body('userId') userId: number,
+    @CurrentUser('userId') userId: number,
   ) {
     return this.authService.authenticateAdmin(eventToken, userId);
   }
