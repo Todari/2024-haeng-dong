@@ -87,6 +87,7 @@ export class AuthService {
     redirectUri: string,
   ): Promise<{ id: string; nickname: string; picture: string | null }> {
     const clientId = this.configService.get<string>('KAKAO_CLIENT_ID');
+    const clientSecret = this.configService.get<string>('KAKAO_CLIENT_SECRET');
     if (!clientId) {
       this.logger.error('KAKAO_CLIENT_ID가 설정되지 않았습니다.');
       throw new UnauthorizedException('KAKAO_CLIENT_ID가 설정되지 않았습니다.');
@@ -94,17 +95,22 @@ export class AuthService {
 
     this.logger.log(`카카오 토큰 요청 - redirect_uri: ${redirectUri}`);
 
+    const tokenParams: Record<string, string> = {
+      grant_type: 'authorization_code',
+      client_id: clientId,
+      redirect_uri: redirectUri,
+      code,
+    };
+    if (clientSecret) {
+      tokenParams.client_secret = clientSecret;
+    }
+
     const tokenResponse = await fetch(
       'https://kauth.kakao.com/oauth/token',
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({
-          grant_type: 'authorization_code',
-          client_id: clientId,
-          redirect_uri: redirectUri,
-          code,
-        }),
+        body: new URLSearchParams(tokenParams),
       },
     );
 
