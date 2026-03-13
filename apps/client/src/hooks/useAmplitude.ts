@@ -1,10 +1,10 @@
-import {track} from '@amplitude/analytics-browser';
+// import {track} from '@amplitude/analytics-browser';
 
 import {BankName, EventName} from 'types/serviceType';
 
-import {useAuthStore} from '@store/authStore';
+// import {useAuthStore} from '@store/authStore';
 
-import detectBrowser from '@utils/detectBrowser';
+// import detectBrowser from '@utils/detectBrowser';
 
 type EventUniqueData = {
   eventName: EventName;
@@ -32,15 +32,16 @@ type SendMoneyData = EventUniqueData & {
 type UserAB = 'A' | 'B';
 
 const useAmplitude = () => {
-  const domainEnv = process.env.NODE_ENV;
-  const {isKakaoUser} = useAuthStore();
+  // Amplitude 트래킹 잠시 비활성화
+  // const domainEnv = process.env.NODE_ENV;
+  // const {isKakaoUser} = useAuthStore();
 
-  const trackEvent = (eventName: string, eventProps: Record<string, any> = {}) => {
-    track({
-      event_type: eventName,
-      event_properties: {domain: domainEnv, browser: detectBrowser(), ...eventProps},
-      user_properties: {isKakaoUser},
-    });
+  const trackEvent = (_eventName: string, _eventProps: Record<string, any> = {}) => {
+    // track({
+    //   event_type: eventName,
+    //   event_properties: {domain: domainEnv, browser: detectBrowser(), ...eventProps},
+    //   user_properties: {isKakaoUser},
+    // });
   };
 
   // 1. 랜딩 페이지
