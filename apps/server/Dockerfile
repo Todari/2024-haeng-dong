@@ -17,7 +17,7 @@ COPY --from=deps /app/packages/shared/node_modules ./packages/shared/node_module
 COPY packages/shared ./packages/shared
 COPY apps/server ./apps/server
 RUN cd packages/shared && pnpm build
-RUN cd apps/server && npx prisma generate && npx tsc -p tsconfig.build.json
+RUN cd apps/server && rm -f tsconfig.build.tsbuildinfo && npx prisma generate && npx tsc -p tsconfig.build.json
 RUN find /app/apps/server/dist -type f -name "*.js" | head -20
 
 FROM base AS runner
