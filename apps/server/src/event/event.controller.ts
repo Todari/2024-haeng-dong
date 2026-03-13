@@ -31,15 +31,15 @@ export class EventController {
     return this.eventService.createEvent(dto, userId);
   }
 
-  @Get('events/:token')
-  findEvent(@Param('token') token: string) {
-    return this.eventService.findByToken(token);
-  }
-
   @UseGuards(JwtAuthGuard)
   @Get('events/mine')
   findMyEvents(@CurrentUser('userId') userId: number) {
     return this.eventService.findMyEvents(userId);
+  }
+
+  @Get('events/:token')
+  findEvent(@Param('token') token: string) {
+    return this.eventService.findByToken(token);
   }
 
   @UseGuards(JwtAuthGuard)
