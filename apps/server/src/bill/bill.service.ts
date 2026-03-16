@@ -20,7 +20,7 @@ export class BillService {
     this.verifyOwner(event, userId);
     this.validateDetailPriceSum(dto.price, dto.billDetails);
 
-    return this.prisma.bill.create({
+    const bill = await this.prisma.bill.create({
       data: {
         eventId: event.id,
         title: dto.title,
@@ -35,6 +35,18 @@ export class BillService {
       },
       include: { billDetails: true },
     });
+
+    return {
+      id: bill.id,
+      title: bill.title,
+      price: Number(bill.price),
+      billDetails: bill.billDetails.map((d) => ({
+        id: d.id,
+        memberId: d.memberId,
+        price: Number(d.price),
+        isFixed: d.isFixed,
+      })),
+    };
   }
 
   async findAllByEvent(eventToken: string) {

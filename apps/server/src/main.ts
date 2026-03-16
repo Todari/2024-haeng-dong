@@ -1,3 +1,8 @@
+// BigInt JSON 직렬화 지원
+(BigInt.prototype as any).toJSON = function () {
+  return Number(this);
+};
+
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import * as cookieParser from 'cookie-parser';
