@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find . -type f -name .env* -o -name *.tfvars -o -name *.tf)",
+      "Bash(find . -path ./node_modules -prune -o -type f \\\\\\(-name nginx.conf -o -name *.conf -o -name *deployment* -o -name *deploy* \\\\\\) -print)",
+      "Bash(find . -path ./node_modules -prune -o -type f \\\\\\(-name README* -o -name DEPLOY* -o -name SETUP* -o -name INSTALL* \\\\\\) -print)",
+      "Bash(find ./apps -path ./apps/client/node_modules -prune -o -type f \\\\\\(-name *.env* -o -name *.config.* -o -name *.conf* \\\\\\) -print)",
+      "Bash(find . -path ./node_modules -prune -o -type f -name *.md -print)"
+    ]
+  }
+}

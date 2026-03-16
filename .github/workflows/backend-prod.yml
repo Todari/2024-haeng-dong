@@ -2,7 +2,7 @@ name: backend-prod-deploy
 
 on:
   push:
-    branches: ["release"]
+    branches: ["main"]
     paths:
       - "apps/server/**"
       - "packages/shared/**"
@@ -27,7 +27,7 @@ jobs:
 
       - name: Build and push
         run: |
-          docker buildx build --platform linux/arm64 \
+          docker buildx build --platform linux/amd64 \
             --no-cache \
             -f apps/server/Dockerfile \
             -t ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE_BE_PROD }} \
