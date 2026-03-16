@@ -93,6 +93,9 @@ jobs:
             -e JWT_SECRET=${{ secrets.JWT_SECRET }} \
             -e CORS_ORIGIN=${{ secrets.CORS_ORIGIN }} \
             -e KAKAO_CLIENT_ID=${{ secrets.KAKAO_CLIENT_ID }} \
+            -e KAKAO_CLIENT_SECRET=${{ secrets.KAKAO_CLIENT_SECRET }} \
+            -e NODE_ENV=production \
+            -e COOKIE_DOMAIN=.haengdong.pro \
             ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE_BE_PROD }}
 
       - name: Health check the new container
