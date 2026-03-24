@@ -7,7 +7,15 @@ import { EventService } from '../event/event.service';
 const mockEvent = { id: 1, userId: 10, token: 'event-token', deletedAt: null };
 
 const mockTx = {
-  billDetail: { deleteMany: jest.fn() },
+  billDetail: {
+    deleteMany: jest.fn(),
+    findMany: jest.fn().mockResolvedValue([]),
+    update: jest.fn(),
+  },
+  bill: {
+    findUnique: jest.fn().mockResolvedValue(null),
+    delete: jest.fn(),
+  },
   eventMember: { delete: jest.fn() },
 };
 
@@ -56,7 +64,7 @@ describe('MemberService', () => {
       ]);
 
       const result = await service.addMembers('event-token', 10, {
-        names: ['Alice', 'Bob'],
+        members: [{ name: 'Alice' }, { name: 'Bob' }],
       });
 
       expect(result.members).toEqual([
@@ -69,7 +77,7 @@ describe('MemberService', () => {
       mockEventService.getEventByToken.mockResolvedValue(mockEvent);
 
       await expect(
-        service.addMembers('event-token', 999, { names: ['Alice'] }),
+        service.addMembers('event-token', 999, { members: [{ name: 'Alice' }] }),
       ).rejects.toThrow(ForbiddenException);
     });
   });
@@ -129,18 +137,31 @@ describe('MemberService', () => {
   });
 
   describe('deleteMember', () => {
-    it('멤버의 BillDetail을 먼저 삭제한 후 멤버를 삭제한다', async () => {
+    it('멤버의 BillDetail을 삭제하고 남은 금액을 재분배한 후 멤버를 삭제한다', async () => {
       mockEventService.getEventByToken.mockResolvedValue(mockEvent);
       mockPrisma.eventMember.findFirst.mockResolvedValue({
         id: 1,
         eventId: 1,
         name: 'Alice',
       });
+      mockTx.billDetail.findMany
+        .mockResolvedValueOnce([{ billId: 100 }]) // affected bills
+        .mockResolvedValueOnce([
+          { id: 10, memberId: 2, price: BigInt(5000), isFixed: false },
+        ]); // remaining details
+      mockTx.bill.findUnique.mockResolvedValue({
+        id: 100,
+        price: BigInt(10000),
+      });
 
       await service.deleteMember('event-token', 1, 10);
 
       expect(mockTx.billDetail.deleteMany).toHaveBeenCalledWith({
         where: { memberId: 1 },
+      });
+      expect(mockTx.billDetail.update).toHaveBeenCalledWith({
+        where: { id: 10 },
+        data: { price: BigInt(10000), isFixed: false },
       });
       expect(mockTx.eventMember.delete).toHaveBeenCalledWith({
         where: { id: 1 },

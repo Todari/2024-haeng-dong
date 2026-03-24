@@ -50,7 +50,15 @@ describe('BillService', () => {
   describe('create', () => {
     it('상세 금액 합계가 총액과 일치하면 청구를 생성한다', async () => {
       mockEventService.getEventByToken.mockResolvedValue(mockEvent);
-      mockPrisma.bill.create.mockResolvedValue({ id: 1 });
+      mockPrisma.bill.create.mockResolvedValue({
+        id: 1,
+        title: '저녁',
+        price: BigInt(10000),
+        billDetails: [
+          { id: 1, memberId: 1, price: BigInt(5000), isFixed: false },
+          { id: 2, memberId: 2, price: BigInt(5000), isFixed: false },
+        ],
+      });
 
       await service.create('event-token', 10, {
         title: '저녁',

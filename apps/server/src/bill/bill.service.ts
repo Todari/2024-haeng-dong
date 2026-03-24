@@ -4,6 +4,7 @@ import {
   BadRequestException,
   ForbiddenException,
 } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { EventService } from '../event/event.service';
 import { CreateBillDto, UpdateBillDto, UpdateBillDetailsDto } from './bill.dto';
@@ -20,33 +21,43 @@ export class BillService {
     this.verifyOwner(event, userId);
     this.validateDetailPriceSum(dto.price, dto.billDetails);
 
-    const bill = await this.prisma.bill.create({
-      data: {
-        eventId: event.id,
-        title: dto.title,
-        price: BigInt(dto.price),
-        billDetails: {
-          create: dto.billDetails.map((d) => ({
-            memberId: d.memberId,
-            price: BigInt(d.price),
-            isFixed: d.isFixed,
-          })),
+    try {
+      const bill = await this.prisma.bill.create({
+        data: {
+          eventId: event.id,
+          title: dto.title,
+          price: BigInt(dto.price),
+          billDetails: {
+            create: dto.billDetails.map((d) => ({
+              memberId: d.memberId,
+              price: BigInt(d.price),
+              isFixed: d.isFixed,
+            })),
+          },
         },
-      },
-      include: { billDetails: true },
-    });
+        include: { billDetails: true },
+      });
 
-    return {
-      id: bill.id,
-      title: bill.title,
-      price: Number(bill.price),
-      billDetails: bill.billDetails.map((d) => ({
-        id: d.id,
-        memberId: d.memberId,
-        price: Number(d.price),
-        isFixed: d.isFixed,
-      })),
-    };
+      return {
+        id: bill.id,
+        title: bill.title,
+        price: Number(bill.price),
+        billDetails: bill.billDetails.map((d) => ({
+          id: d.id,
+          memberId: d.memberId,
+          price: Number(d.price),
+          isFixed: d.isFixed,
+        })),
+      };
+    } catch (e) {
+      if (
+        e instanceof Prisma.PrismaClientKnownRequestError &&
+        e.code === 'P2003'
+      ) {
+        throw new BadRequestException('존재하지 않는 멤버가 포함되어 있습니다.');
+      }
+      throw e;
+    }
   }
 
   async findAllByEvent(eventToken: string) {

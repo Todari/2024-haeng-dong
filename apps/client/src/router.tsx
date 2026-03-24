@@ -2,6 +2,7 @@ import {createBrowserRouter} from 'react-router-dom';
 import {lazy, Suspense} from 'react';
 
 import {ROUTER_URLS} from '@constants/routerUrls';
+import {HDesignProvider} from '@HDesign/index';
 
 import App from './App';
 const LandingPage = lazy(() => import('@pages/landing/LandingPage'));
@@ -48,6 +49,11 @@ const router = createBrowserRouter([
       <Suspense>
         <App />
       </Suspense>
+    ),
+    errorElement: (
+      <HDesignProvider>
+        <ErrorPage />
+      </HDesignProvider>
     ),
     children: [
       {
@@ -198,7 +204,11 @@ const router = createBrowserRouter([
   },
   {
     path: '*',
-    element: <ErrorPage />,
+    element: (
+      <HDesignProvider>
+        <ErrorPage />
+      </HDesignProvider>
+    ),
   },
 ]);
 

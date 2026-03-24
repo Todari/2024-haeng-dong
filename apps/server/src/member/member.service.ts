@@ -90,7 +90,45 @@ export class MemberService {
     if (!member) throw new NotFoundException('멤버를 찾을 수 없습니다.');
 
     await this.prisma.$transaction(async (tx) => {
+      // 해당 멤버가 포함된 청구서 목록 조회
+      const affectedBills = await tx.billDetail.findMany({
+        where: { memberId },
+        select: { billId: true },
+      });
+      const billIds = [...new Set(affectedBills.map((d) => d.billId))];
+
+      // 멤버의 BillDetail 삭제
       await tx.billDetail.deleteMany({ where: { memberId } });
+
+      // 남은 BillDetail 금액을 재분배하여 Bill.price와 일치시킴
+      for (const billId of billIds) {
+        const bill = await tx.bill.findUnique({ where: { id: billId } });
+        if (!bill) continue;
+
+        const remainingDetails = await tx.billDetail.findMany({
+          where: { billId },
+        });
+
+        if (remainingDetails.length === 0) {
+          await tx.bill.delete({ where: { id: billId } });
+          continue;
+        }
+
+        const totalPrice = Number(bill.price);
+        const perMember = Math.floor(totalPrice / remainingDetails.length);
+        const remainder = totalPrice - perMember * remainingDetails.length;
+
+        for (let i = 0; i < remainingDetails.length; i++) {
+          const newPrice = i === remainingDetails.length - 1
+            ? perMember + remainder
+            : perMember;
+          await tx.billDetail.update({
+            where: { id: remainingDetails[i].id },
+            data: { price: BigInt(newPrice), isFixed: false },
+          });
+        }
+      }
+
       await tx.eventMember.delete({ where: { id: memberId } });
     });
   }

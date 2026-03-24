@@ -252,3 +252,4 @@ dist/
 .env.*.local
 .turbo/
 .pnpm-store/
+*.pem
