@@ -27,6 +27,7 @@ const useRequestPostAuthentication = () => {
   const {mutate, ...rest} = useMutation({
     mutationFn: () => requestPostAuthentication({eventId}),
     onSuccess: () => updateAuth(true),
+    meta: {skipGlobalErrorHandling: true},
     onError: () => {
       if (isSecondEncounteredOnError()) return;
       SessionStorage.set<string>(SESSION_STORAGE_KEYS.previousUrlForLogin, window.location.pathname);

@@ -28,7 +28,8 @@ const QueryClientBoundary = ({children}: React.PropsWithChildren) => {
       },
     }),
     mutationCache: new MutationCache({
-      onError: (error: Error) => {
+      onError: (error: Error, _variables, _context, mutation) => {
+        if (mutation.meta?.skipGlobalErrorHandling) return;
         updateAppError(error);
       },
     }),

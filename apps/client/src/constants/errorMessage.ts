@@ -39,7 +39,10 @@ export const SERVER_ERROR_MESSAGES: ErrorMessage = {
   TOKEN_NOT_FOUND: '로그인이 필요한 서비스에요.',
   TOKEN_EXPIRED: '로그인이 만료되었어요. 다시 로그인해주세요.',
   TOKEN_INVALID: '비밀번호를 올바르게 입력해주세요.',
+  UNAUTHORIZED: '로그인이 필요한 서비스에요.',
   FORBIDDEN: '접근할 수 없는 행사에요.',
+  NOT_FOUND: '존재하지 않는 페이지에요.',
+  BAD_REQUEST: '잘못된 요청이에요.',
   PASSWORD_INVALID: '비밀번호를 올바르게 입력해주세요.',
 
   // 사용자에게 뜨면 안되며 프론트 구현 미스인 에러 코드
