@@ -12,5 +12,6 @@ declare namespace NodeJS {
     readonly KAKAO_JAVASCRIPT_KEY: string;
     readonly KAKAO_REDIRECT_URI: string;
     readonly IMAGE_URL: string;
+    readonly GA_MEASUREMENT_ID: string;
   }
 }
