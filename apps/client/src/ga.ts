@@ -1,6 +1,7 @@
 declare global {
   interface Window {
     dataLayer: unknown[];
+    gtag: (...args: unknown[]) => void;
   }
 }
 
@@ -16,8 +17,13 @@ if (GA_ID) {
   function gtag(...args: unknown[]) {
     window.dataLayer.push(args);
   }
+  window.gtag = gtag;
   gtag('js', new Date());
   gtag('config', GA_ID);
 }
 
-export {};
+export const trackEvent = (eventName: string, eventParams: Record<string, unknown> = {}) => {
+  if (window.gtag) {
+    window.gtag('event', eventName, eventParams);
+  }
+};
