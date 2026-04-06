@@ -56,6 +56,7 @@
     "@types/testing-library__jest-dom": "^6.0.0",
     "@typescript-eslint/eslint-plugin": "^7.16.0",
     "@typescript-eslint/parser": "^7.16.0",
+    "copy-webpack-plugin": "^14.0.0",
     "cypress": "^13.13.2",
     "dotenv-webpack": "^8.1.0",
     "eslint": "^9.6.0",

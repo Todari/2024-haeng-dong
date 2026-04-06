@@ -1,5 +1,6 @@
 import path from 'path';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
+import CopyWebpackPlugin from 'copy-webpack-plugin';
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import {ModifySourcePlugin, ConcatOperation} from 'modify-source-webpack-plugin';
 import {fileURLToPath} from 'url';
@@ -69,6 +70,15 @@ export default {
       template: './index.html',
       hash: true,
       favicon: path.resolve(__dirname, 'public/favicon.ico'),
+    }),
+    new CopyWebpackPlugin({
+      patterns: [
+        {
+          from: path.resolve(__dirname, 'public'),
+          to: '.',
+          globOptions: {ignore: ['**/favicon.ico', '**/mockServiceWorker.js']},
+        },
+      ],
     }),
     new ForkTsCheckerWebpackPlugin(),
     new ModifySourcePlugin({
