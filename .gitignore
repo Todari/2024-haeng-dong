@@ -253,3 +253,4 @@ dist/
 .turbo/
 .pnpm-store/
 *.pem
+.vercel
