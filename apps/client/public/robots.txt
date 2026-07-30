@@ -4,4 +4,4 @@ Disallow: /event/*/admin
 Disallow: /login
 Disallow: /setting
 
-Sitemap: https://haengdong.pro/sitemap.xml
+Sitemap: https://haengdong.todari.dev/sitemap.xml
