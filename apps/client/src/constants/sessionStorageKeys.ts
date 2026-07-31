@@ -3,6 +3,7 @@ const SESSION_STORAGE_KEYS = {
   closeDepositStateBannerByEventToken: (eventToken: string) => `closeDepositStateBanner-${eventToken}`,
   createdByGuest: 'createdByGuest',
   previousUrlForLogin: 'previousUrlForLogin',
+  accessToken: 'accessToken',
   eventHomeTab: 'eventHomeTab',
 } as const;
 

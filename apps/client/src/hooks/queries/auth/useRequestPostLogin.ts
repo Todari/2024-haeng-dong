@@ -17,7 +17,9 @@ const useRequestPostLogin = () => {
 
   const {mutate, ...rest} = useMutation({
     mutationFn: ({password}: RequestPostToken) => requestPostToken({eventId, password}),
-    onSuccess: () => {
+    onSuccess: ({token}) => {
+      SessionStorage.set(SESSION_STORAGE_KEYS.accessToken, token);
+
       const previousUrlForLogin = SessionStorage.get<string>(SESSION_STORAGE_KEYS.previousUrlForLogin);
       if (previousUrlForLogin) {
         SessionStorage.remove(SESSION_STORAGE_KEYS.previousUrlForLogin);

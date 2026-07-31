@@ -64,12 +64,15 @@ export const authHandler = [
 
       // 비밀번호가 1234인 경우만 성공으로 처리
       if (password === '1234') {
-        return new HttpResponse(null, {
-          status: 200,
-          headers: {
-            'Set-Cookie': `eventToken=${eventId}-token`,
+        return HttpResponse.json(
+          {token: `${eventId}-token`},
+          {
+            status: 200,
+            headers: {
+              'Set-Cookie': `accessToken=${eventId}-token`,
+            },
           },
-        });
+        );
       } else {
         return HttpResponse.json(
           {

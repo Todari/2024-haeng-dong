@@ -1,6 +1,9 @@
 import {RequestGetError, WithErrorHandlingStrategy} from '@errors/RequestGetError';
 
 import objectToQueryString from '@utils/objectToQueryString';
+import SessionStorage from '@utils/SessionStorage';
+
+import SESSION_STORAGE_KEYS from '@constants/sessionStorageKeys';
 
 import RequestError from '../errors/RequestError';
 
@@ -45,7 +48,7 @@ type FetchType = {
   requestInit: RequestInitWithMethod;
 };
 
-const API_BASE_URL = process.env.API_BASE_URL;
+const API_BASE_URL = process.env.NODE_ENV === 'development' ? '' : process.env.API_BASE_URL;
 
 export const requestGet = async <T>({
   headers = {},
@@ -114,17 +117,27 @@ const prepareRequest = ({baseUrl = API_BASE_URL, method, endpoint, headers, body
 };
 
 const createRequestInit = ({method, headers, body}: CreateRequestInitProps) => {
+  const requestHeaders = new Headers(headers);
+  const accessToken =
+    typeof window === 'undefined' ? null : SessionStorage.get<string>(SESSION_STORAGE_KEYS.accessToken);
+
+  if (accessToken) {
+    requestHeaders.set('Authorization', `Bearer ${accessToken}`);
+  }
+
   const requestInit: RequestInitWithMethod = {
     credentials: 'include',
     method,
+    headers: requestHeaders,
   };
 
   if (body instanceof FormData) {
     return {...requestInit, body};
   } else {
+    requestHeaders.set('Content-Type', 'application/json');
+
     return {
       ...requestInit,
-      headers: {...headers, 'Content-Type': 'application/json'},
       body: body ? JSON.stringify(body) : null,
     };
   }

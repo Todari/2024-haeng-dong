@@ -57,7 +57,7 @@ const EventPageLayout = () => {
     updateMetaTag('og:title', `행동대장이 "${eventSummary.eventName}"에 대한 정산을 요청했어요`);
 
     return () => {
-      updateMetaTag('og:title', '행동대장 - 쉽고 빠른 모임 정산 및 송금 서비스');
+      updateMetaTag('og:title', '행동대장 | 가입 없이 쓰는 모임 정산·더치페이');
     };
   }, []);
 

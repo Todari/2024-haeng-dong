@@ -22,6 +22,20 @@ export default merge(common, {
     port: 3000,
     historyApiFallback: true,
     hot: true,
+    proxy: [
+      {
+        context: ['/api'],
+        target: 'https://api.haengdong.todari.dev',
+        changeOrigin: true,
+        secure: true,
+        onProxyRes(proxyResponse) {
+          const cookies = proxyResponse.headers['set-cookie'];
+          if (!cookies) return;
+
+          proxyResponse.headers['set-cookie'] = cookies.map(cookie => cookie.replace(/;\s*Secure/gi, ''));
+        },
+      },
+    ],
     client: {
       overlay: false,
     },
@@ -29,6 +43,8 @@ export default merge(common, {
   plugins: [
     new Dotenv({
       path: '.env.dev',
+      systemvars: true,
+      silent: true,
     }),
   ],
   optimization: {

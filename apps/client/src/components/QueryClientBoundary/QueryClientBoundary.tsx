@@ -11,7 +11,7 @@ const QueryClientBoundary = ({children}: React.PropsWithChildren) => {
     // errorBoundary를 사용하기 위해 true로 해줘야함.
     defaultOptions: {
       queries: {
-        throwOnError: true,
+        throwOnError: error => error instanceof RequestGetError && error.errorHandlingStrategy === 'errorBoundary',
 
         staleTime: 1000 * 60, // 1 minute
         gcTime: 1000 * 60, // 1 minute
