@@ -8,7 +8,8 @@ const config: Config = {
   setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],
   moduleNameMapper: {
-    '\\.(svg|png|webp)$': 'jest-transform-stub',
+    '\\.svg$': '<rootDir>/src/test/svgMock.tsx',
+    '\\.(png|webp)$': 'jest-transform-stub',
     '^(\\.{1,2}/.*)\\.js$': '$1',
     '^@apis/(.*)$': '<rootDir>/src/apis/$1',
     '^@assets/(.*)$': '<rootDir>/src/assets/$1',

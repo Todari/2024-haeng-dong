@@ -1,8 +1,9 @@
 import {createBrowserRouter} from 'react-router-dom';
 import {lazy, Suspense} from 'react';
 
-import {ROUTER_URLS} from '@constants/routerUrls';
 import {HDesignProvider} from '@HDesign/index';
+
+import {ROUTER_URLS} from '@constants/routerUrls';
 
 import App from './App';
 const LandingPage = lazy(() => import('@pages/landing/LandingPage'));

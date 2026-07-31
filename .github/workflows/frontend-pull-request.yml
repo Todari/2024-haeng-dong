@@ -40,6 +40,8 @@ jobs:
   chromatic:
     name: Run Chromatic
     runs-on: ubuntu-latest
+    env:
+      CHROMATIC_PROJECT_TOKEN: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
 
     steps:
       - name: Checkout code
@@ -63,13 +65,15 @@ jobs:
         run: pnpm --filter @haeng-dong/shared build
 
       - name: Run Chromatic
+        if: env.CHROMATIC_PROJECT_TOKEN != ''
         uses: chromaui/action@latest
         id: publish_chromatic
         with:
           workingDir: apps/client
-          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+          projectToken: ${{ env.CHROMATIC_PROJECT_TOKEN }}
 
       - name: Comment on PR
+        if: env.CHROMATIC_PROJECT_TOKEN != ''
         uses: thollander/actions-comment-pull-request@v2
         with:
           message: "**storybook**: ${{ steps.publish_chromatic.outputs.storybookUrl }}"
