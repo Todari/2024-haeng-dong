@@ -70,6 +70,7 @@ export default {
       template: './index.html',
       hash: true,
       favicon: path.resolve(__dirname, 'public/favicon.ico'),
+      upgradeInsecureRequests: process.env.NODE_ENV === 'production',
     }),
     new CopyWebpackPlugin({
       patterns: [

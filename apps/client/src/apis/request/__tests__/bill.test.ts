@@ -1,4 +1,10 @@
-import { requestPostBill, requestDeleteBill, requestPutBill, requestGetBillDetails, requestPutBillDetails } from '../bill';
+import {
+  requestPostBill,
+  requestDeleteBill,
+  requestPutBill,
+  requestGetBillDetails,
+  requestPutBillDetails,
+} from '../bill';
 
 beforeEach(() => {
   jest.resetAllMocks();
@@ -40,9 +46,7 @@ describe('requestPostBill', () => {
     expect(body.price).toBe(30000);
     expect(body.billDetails).toHaveLength(3);
 
-    const totalFromDetails = body.billDetails.reduce(
-      (sum: number, d: { price: number }) => sum + d.price, 0,
-    );
+    const totalFromDetails = body.billDetails.reduce((sum: number, d: {price: number}) => sum + d.price, 0);
     expect(totalFromDetails).toBe(30000);
   });
 
@@ -73,7 +77,7 @@ describe('requestPostBill', () => {
     });
 
     const body = JSON.parse(lastFetchCall()[1].body);
-    expect(body.billDetails.every((d: { isFixed: boolean }) => d.isFixed === false)).toBe(true);
+    expect(body.billDetails.every((d: {isFixed: boolean}) => d.isFixed === false)).toBe(true);
   });
 
   it('각 billDetail에 올바른 memberId가 매핑된다', async () => {
@@ -87,7 +91,7 @@ describe('requestPostBill', () => {
     });
 
     const body = JSON.parse(lastFetchCall()[1].body);
-    expect(body.billDetails.map((d: { memberId: number }) => d.memberId)).toEqual([5, 10, 15]);
+    expect(body.billDetails.map((d: {memberId: number}) => d.memberId)).toEqual([5, 10, 15]);
   });
 });
 
@@ -95,7 +99,7 @@ describe('requestDeleteBill', () => {
   it('올바른 endpoint로 DELETE 요청을 보낸다', async () => {
     mockFetchOk();
 
-    await requestDeleteBill({ eventId: 'abc123', billId: 42 });
+    await requestDeleteBill({eventId: 'abc123', billId: 42});
 
     const [, init] = lastFetchCall();
     expect(lastFetchUrl()).toContain('/api/admin/events/abc123/bills/42');
@@ -127,13 +131,11 @@ describe('requestPutBill', () => {
 describe('requestGetBillDetails', () => {
   it('올바른 endpoint로 GET 요청을 보내고 응답을 반환한다', async () => {
     const mockResponse = {
-      members: [
-        { id: 1, memberId: 1, memberName: 'Alice', price: 5000, isFixed: false },
-      ],
+      members: [{id: 1, memberId: 1, memberName: 'Alice', price: 5000, isFixed: false}],
     };
     mockFetchOk(mockResponse);
 
-    const result = await requestGetBillDetails({ eventId: 'abc123', billId: 42 });
+    const result = await requestGetBillDetails({eventId: 'abc123', billId: 42});
 
     expect(lastFetchUrl()).toContain('/api/events/abc123/bills/42/details');
     expect(lastFetchCall()[1].method).toBe('GET');
@@ -146,8 +148,8 @@ describe('requestPutBillDetails', () => {
     mockFetchOk();
 
     const billDetails = [
-      { memberId: 1, price: 6000, isFixed: true },
-      { memberId: 2, price: 4000, isFixed: false },
+      {memberId: 1, price: 6000, isFixed: true},
+      {memberId: 2, price: 4000, isFixed: false},
     ];
 
     await requestPutBillDetails({

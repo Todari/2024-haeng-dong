@@ -1,7 +1,4 @@
 User-agent: *
 Allow: /
-Disallow: /event/*/admin
-Disallow: /login
-Disallow: /setting
 
 Sitemap: https://haengdong.todari.dev/sitemap.xml

@@ -17,7 +17,6 @@ if (GA_ID) {
   // Must use `arguments` (IArguments), not rest params, to match the format
   // gtag.js expects when processing the dataLayer queue.
   window.gtag = function () {
-    // eslint-disable-next-line prefer-rest-params
     window.dataLayer.push(arguments);
   };
   window.gtag('js', new Date());

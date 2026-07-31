@@ -4,7 +4,13 @@ import {Flex, MainLayout, Text} from '@HDesign/index';
 
 import getImageUrl from '@utils/getImageUrl';
 
-const ErrorPage = () => {
+type ErrorPageProps = {
+  error?: Error;
+};
+
+const ErrorPage = ({error}: ErrorPageProps) => {
+  const showErrorDetail = process.env.NODE_ENV === 'development' && error;
+
   return (
     <MainLayout>
       <Flex
@@ -21,6 +27,22 @@ const ErrorPage = () => {
           계속 발생한다면 잠시 후 다시 시도해주세요. <br />
           인터넷 연결 상태가 좋지 않으면 발생할 수 있습니다.
         </Text>
+        {showErrorDetail && (
+          <Text
+            size="caption"
+            css={{
+              width: 'calc(100% - 2rem)',
+              padding: '0.75rem',
+              border: '2px solid #242126',
+              borderRadius: '0.75rem',
+              backgroundColor: '#F0E5FF',
+              overflowWrap: 'anywhere',
+              whiteSpace: 'pre-wrap',
+            }}
+          >
+            {error.message}
+          </Text>
+        )}
       </Flex>
     </MainLayout>
   );

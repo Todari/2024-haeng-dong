@@ -34,11 +34,18 @@ export class AuthController {
   }
 
   @Post('events/:eventToken/login')
-  login(
+  async login(
     @Param('eventToken') eventToken: string,
     @Body('password') password: string,
+    @Res({ passthrough: true }) res: Response,
   ) {
-    return this.authService.loginWithPassword(eventToken, password);
+    const result = await this.authService.loginWithPassword(
+      eventToken,
+      password,
+    );
+
+    this.setAccessTokenCookie(res, result.token);
+    return result;
   }
 
   @Get('kakao-client-id')
@@ -56,6 +63,12 @@ export class AuthController {
   ) {
     const { token } = await this.authService.loginWithKakao(code, redirectUri);
 
+    this.setAccessTokenCookie(res, token);
+
+    return {};
+  }
+
+  private setAccessTokenCookie(res: Response, token: string) {
     const isProduction = process.env.NODE_ENV === 'production';
     const cookieDomain = this.configService.get<string>('COOKIE_DOMAIN');
 
@@ -67,7 +80,5 @@ export class AuthController {
       ...(cookieDomain && { domain: cookieDomain }),
       path: '/',
     });
-
-    return {};
   }
 }

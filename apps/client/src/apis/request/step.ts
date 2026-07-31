@@ -1,6 +1,7 @@
+import {groupBillsToSteps} from '@haeng-dong/shared';
+
 import {Step} from 'types/serviceType';
 import {WithErrorHandlingStrategy} from '@errors/RequestGetError';
-import {groupBillsToSteps} from '@haeng-dong/shared';
 
 import {BASE_URL} from '@apis/baseUrl';
 import {MEMBER_API_PREFIX} from '@apis/endpointPrefix';

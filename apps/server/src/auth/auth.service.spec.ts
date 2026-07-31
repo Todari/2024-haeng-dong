@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UnauthorizedException, NotFoundException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { AuthService } from './auth.service';
 import { PrismaService } from '../prisma/prisma.service';
@@ -32,6 +33,7 @@ describe('AuthService', () => {
         AuthService,
         { provide: PrismaService, useValue: mockPrisma },
         { provide: JwtService, useValue: mockJwtService },
+        { provide: ConfigService, useValue: { get: jest.fn() } },
       ],
     }).compile();
 
@@ -89,7 +91,10 @@ describe('AuthService', () => {
       mockPrisma.user.findFirst.mockResolvedValue(user);
       (bcrypt.compare as jest.Mock).mockResolvedValue(true);
 
-      const result = await service.loginWithPassword('event-token', 'password123');
+      const result = await service.loginWithPassword(
+        'event-token',
+        'password123',
+      );
 
       expect(result).toEqual({ token: 'mock-jwt-token' });
       expect(mockJwtService.sign).toHaveBeenCalledWith({

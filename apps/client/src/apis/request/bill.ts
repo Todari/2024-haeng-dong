@@ -1,7 +1,8 @@
 import type {BillDetails} from 'types/serviceType';
 
-import {WithErrorHandlingStrategy} from '@errors/RequestGetError';
 import {distributePrice} from '@haeng-dong/shared';
+
+import {WithErrorHandlingStrategy} from '@errors/RequestGetError';
 
 import {BASE_URL} from '@apis/baseUrl';
 import {ADMIN_API_PREFIX, MEMBER_API_PREFIX} from '@apis/endpointPrefix';
