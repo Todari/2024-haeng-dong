@@ -11,6 +11,7 @@ import { EventService } from '../event/event.service';
 const mockEvent = { id: 1, userId: 10, token: 'event-token', deletedAt: null };
 
 const mockPrisma = {
+  eventMember: { count: jest.fn() },
   bill: {
     create: jest.fn(),
     findMany: jest.fn(),
@@ -44,6 +45,7 @@ describe('BillService', () => {
 
     service = module.get<BillService>(BillService);
     jest.clearAllMocks();
+    mockPrisma.eventMember.count.mockResolvedValue(2);
     mockPrisma.$transaction.mockImplementation((cb: (tx: typeof mockPrisma) => unknown) => cb(mockPrisma));
   });
 
@@ -248,6 +250,48 @@ describe('BillService', () => {
           ],
         }),
       ).rejects.toThrow(BadRequestException);
+    });
+  });
+
+  describe.each(['create', 'updateDetails'] as const)('%s 멤버 경계', (operation) => {
+    const invoke = (memberIds: number[]) => {
+      const billDetails = memberIds.map((memberId) => ({ memberId, price: 5000, isFixed: false }));
+      return operation === 'create'
+        ? service.create('event-token', 10, { title: '식사', price: 10000, billDetails })
+        : service.updateDetails('event-token', 1, 10, { billDetails });
+    };
+
+    beforeEach(() => {
+      mockEventService.getEventByToken.mockResolvedValue(mockEvent);
+      mockPrisma.bill.findUnique.mockResolvedValue({ id: 1, eventId: 1, price: BigInt(10000) });
+    });
+
+    it('다른 행사 또는 존재하지 않는 멤버가 있으면 기존 상세를 보존한다', async () => {
+      mockPrisma.eventMember.count.mockResolvedValue(1);
+      await expect(invoke([1, 999])).rejects.toThrow(BadRequestException);
+      expect(mockPrisma.eventMember.count).toHaveBeenCalledWith({
+        where: { eventId: 1, id: { in: [1, 999] } },
+      });
+      expect(mockPrisma.bill.create).not.toHaveBeenCalled();
+      expect(mockPrisma.billDetail.deleteMany).not.toHaveBeenCalled();
+      expect(mockPrisma.billDetail.createMany).not.toHaveBeenCalled();
+    });
+
+    it('합계가 맞아도 중복 멤버를 거절한다', async () => {
+      await expect(invoke([1, 1])).rejects.toThrow(BadRequestException);
+      expect(mockPrisma.eventMember.count).not.toHaveBeenCalled();
+      expect(mockPrisma.bill.create).not.toHaveBeenCalled();
+      expect(mockPrisma.billDetail.deleteMany).not.toHaveBeenCalled();
+    });
+
+    it('전역 연결 대신 쓰기와 같은 transaction에서 멤버를 확인한다', async () => {
+      const count = jest.fn().mockResolvedValue(2);
+      mockPrisma.$transaction.mockImplementation((cb) => cb({
+        ...mockPrisma, eventMember: { count },
+      }));
+      await invoke([1, 2]);
+      expect(count).toHaveBeenCalledTimes(1);
+      expect(mockPrisma.eventMember.count).not.toHaveBeenCalled();
     });
   });
 });

@@ -22,20 +22,23 @@ export class BillService {
     this.validateDetailPriceSum(dto.price, dto.billDetails);
 
     try {
-      const bill = await this.prisma.bill.create({
-        data: {
-          eventId: event.id,
-          title: dto.title,
-          price: BigInt(dto.price),
-          billDetails: {
-            create: dto.billDetails.map((d) => ({
-              memberId: d.memberId,
-              price: BigInt(d.price),
-              isFixed: d.isFixed,
-            })),
+      const bill = await this.prisma.$transaction(async (tx) => {
+        await this.validateMembers(tx, event.id, dto.billDetails);
+        return tx.bill.create({
+          data: {
+            eventId: event.id,
+            title: dto.title,
+            price: BigInt(dto.price),
+            billDetails: {
+              create: dto.billDetails.map((d) => ({
+                memberId: d.memberId,
+                price: BigInt(d.price),
+                isFixed: d.isFixed,
+              })),
+            },
           },
-        },
-        include: { billDetails: true },
+          include: { billDetails: true },
+        });
       });
 
       return {
@@ -153,6 +156,7 @@ export class BillService {
     this.validateDetailPriceSum(Number(bill.price), dto.billDetails);
 
     await this.prisma.$transaction(async (tx) => {
+      await this.validateMembers(tx, event.id, dto.billDetails);
       await tx.billDetail.deleteMany({ where: { billId } });
       await tx.billDetail.createMany({
         data: dto.billDetails.map((d) => ({
@@ -169,6 +173,23 @@ export class BillService {
     const bill = await this.prisma.bill.findUnique({ where: { id: billId } });
     if (!bill) throw new NotFoundException('청구를 찾을 수 없습니다.');
     return bill;
+  }
+
+  private async validateMembers(
+    tx: Prisma.TransactionClient,
+    eventId: number,
+    details: { memberId: number }[],
+  ) {
+    const memberIds = details.map((detail) => detail.memberId);
+    if (new Set(memberIds).size !== memberIds.length) {
+      throw new BadRequestException('같은 멤버를 중복으로 지정할 수 없습니다.');
+    }
+    const count = await tx.eventMember.count({
+      where: { eventId, id: { in: memberIds } },
+    });
+    if (count !== memberIds.length) {
+      throw new BadRequestException('이 이벤트에 속하지 않는 멤버가 포함되어 있습니다.');
+    }
   }
 
   private verifyOwner(event: { userId: number }, userId: number) {
